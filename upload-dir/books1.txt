@@ -1,0 +1,7 @@
+java,abc , tech ,4
+c++,abc , tech ,5
+c,abc , tech,4
+php,pqr , tech,8
+python,abc ,tech ,8
+
+
