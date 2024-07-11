@@ -1,4 +1,4 @@
-abc,java
-pqr,c
-uvw,c++
+abc
+pqr
+uvw
 

@@ -10,7 +10,4 @@ public class Health {
     {
         return "hello ";
     }
-
-
-
 }

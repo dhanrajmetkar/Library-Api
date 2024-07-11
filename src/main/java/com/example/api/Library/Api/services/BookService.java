@@ -2,6 +2,7 @@ package com.example.api.Library.Api.services;
 
 import com.example.api.Library.Api.entity.Book;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,6 @@ public interface BookService {
     Optional<Book> findById(Long aLong);
 
     Book findByTitle(String title);
+
+    void saveBook(Book book);
 }

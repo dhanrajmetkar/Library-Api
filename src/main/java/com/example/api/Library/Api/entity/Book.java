@@ -1,10 +1,14 @@
 package com.example.api.Library.Api.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @Entity
@@ -19,7 +23,19 @@ public class Book {
     String author;
     String genre;
     Integer copies;
-@ManyToOne
-@JoinColumn(name = "member_id")
-    Member member;
+    @OneToMany(
+            mappedBy = "book",
+            cascade = CascadeType.ALL,
+            fetch =FetchType.EAGER
+    )
+    @JsonBackReference
+    private List<Member> members=new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "book",
+            cascade = CascadeType.ALL,
+            fetch =FetchType.EAGER
+    )
+    @JsonBackReference
+    private List<BorrowedBook> borrowed_Book=new ArrayList<>();
 }

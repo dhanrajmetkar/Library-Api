@@ -4,6 +4,7 @@ import com.example.api.Library.Api.entity.Book;
 import com.example.api.Library.Api.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -42,7 +43,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public void addAllBooksToDB() throws IOException {
         List<Book> books = readBooksFromFile();
-
         for (Book book : books) {
             bookRepository.save(book);
         }
@@ -67,5 +67,10 @@ public class BookServiceImpl implements BookService {
     public Book findByTitle(String title) {
         Book book = bookRepository.findByTitleIgnoreCase(title);
         return book;
+    }
+
+    @Override
+    public void saveBook(Book book) {
+        bookRepository.save(book);
     }
 }

@@ -5,6 +5,7 @@ import com.example.api.Library.Api.entity.Member;
 import com.example.api.Library.Api.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,30 +23,13 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     BookService bookService;
 
-    public List<Member> readMembersFromFile() throws IOException {
-        List<Member> members = new ArrayList<>();
+    public void addAllMembersToDB() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
         while ((line = reader.readLine()) != null) {
             Member member = new Member();
-            String parts[] = line.trim().split(",");
-            if(parts.length>=1) {
-                member.setName(parts[0]);
-                Book book=bookService.findByTitle(parts[1]);
-                member.setBook((List<Book>) book);
-            }
-            members.add(member);
-        }
-
-        reader.close();
-        return members;
-
-    }
-
-    public void addAllMembersToDB() throws IOException {
-        List<Member> members = readMembersFromFile();
-        for (Member member : members) {
-            memberRepository.save(member);
+            member.setName(line);
+            saveMember(member);
         }
     }
 
@@ -58,5 +42,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Optional<Member> findById(Long aLong) {
         return memberRepository.findById(aLong);
+    }
+
+    @Override
+    public void saveMember(Member member1) {
+        memberRepository.save(member1);
     }
 }

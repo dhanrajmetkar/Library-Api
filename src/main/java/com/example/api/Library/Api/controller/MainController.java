@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,9 +35,19 @@ public class MainController {
         storageService.store(files[0]);
         storageService.store(files[1]);
         storageService.store(files[2]);
-       bookService.addAllBooksToDB();
-//        memberService.addAllMembersToDB();
-//        borrowedBookService.addAllBorrowedBooksToDB();
+        List<Book> books = bookService.readAllBooks();
+        if (books.isEmpty()) {
+            bookService.addAllBooksToDB();
+        }
+        List<Member> members = memberService.getAllMembers();
+        if (members.isEmpty()) {
+            memberService.addAllMembersToDB();
+        }
+        List<BorrowedBook> borrowedBooks=borrowedBookService.getAllBorrowedBooks();
+        if(borrowedBooks.isEmpty()){
+            borrowedBookService.addAllBorrowedBooksToDB();
+        }
+
         return ResponseEntity.ok("file Uploaded successfully ");
     }
 
@@ -52,32 +62,21 @@ public class MainController {
      return  memberService.getAllMembers();
     }
 
-    @GetMapping("/borrowedBooks")
+    @GetMapping("/allBorrowedBooks")
     public List<BorrowedBook> getAllBorrowedBooks(){
        return borrowedBookService.getAllBorrowedBooks();
 
     }
+
     @PutMapping("/updateBook")
      Book updateBook(@RequestParam("book_id") Long bookid,@RequestParam("copies") int copies )
     {
      return bookService.updateBook(bookid,copies);
     }
 
-    @GetMapping("/find/{title}")
-    public Optional<Book> find(@PathVariable String title)
-    {
-        return Optional.ofNullable(bookService.findByTitle(title));
-    }
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+
+
+
+

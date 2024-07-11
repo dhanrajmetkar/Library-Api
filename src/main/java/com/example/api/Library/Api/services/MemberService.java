@@ -14,4 +14,6 @@ public interface MemberService {
     List<Member> getAllMembers();
 
     Optional<Member> findById(Long aLong);
+
+    void saveMember(Member member1);
 }

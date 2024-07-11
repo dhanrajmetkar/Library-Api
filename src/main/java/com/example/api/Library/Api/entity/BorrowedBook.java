@@ -1,5 +1,6 @@
 package com.example.api.Library.Api.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,10 +20,17 @@ public class BorrowedBook {
     Long id;
     LocalDate borrowedDate;
     LocalDate returnDate;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "book_Id", referencedColumnName = "id")
+    @JsonManagedReference
     private Book book;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "m_id", referencedColumnName = "id")
+    @ManyToOne(
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "member_Id", referencedColumnName = "id")
+    @JsonManagedReference
     private Member member;
 
 }

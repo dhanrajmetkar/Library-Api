@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,18 +40,23 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
                 BorrowedBook borrowedBook = new BorrowedBook();
                 borrowedBook.setBorrowedDate(LocalDate.parse(parts[0].trim()));
                 borrowedBook.setReturnDate(LocalDate.parse(parts[1].trim()));
-
+                Book book=null;
                 Optional<Book> books=bookService.findById(Long.valueOf(parts[2]));
                 if(books.isPresent())
                 {
-                    Book book=books.get();
-                    borrowedBook.setBook(book);
+                    book=books.get();
+
                 }
 
                 Optional<Member> members=memberService.findById(Long.valueOf(parts[3]));
                 if(members.isPresent()) {
                     Member member = members.get();
+                    member.setBook(book);
+                    book.setCopies(book.getCopies() - 1);
+                    borrowedBook.setBook(book);
                     borrowedBook.setMember(member);
+                    bookService.saveBook(book);
+                    memberService.saveMember(member);
                 }
                 borrowedBooks.add(borrowedBook);
             }

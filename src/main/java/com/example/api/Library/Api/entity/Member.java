@@ -1,5 +1,7 @@
 package com.example.api.Library.Api.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,10 +21,19 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
     private String Name;
+    @ManyToOne(
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "book_Id", referencedColumnName = "id")
+    @JsonManagedReference
+    private Book book;
+
     @OneToMany(
             mappedBy = "member",
             cascade = CascadeType.ALL,
             fetch =FetchType.EAGER
     )
-  private List<Book> book=new ArrayList<>();
+    @JsonBackReference
+    private List<BorrowedBook> borrowed_Book=new ArrayList<>();
+
  }
