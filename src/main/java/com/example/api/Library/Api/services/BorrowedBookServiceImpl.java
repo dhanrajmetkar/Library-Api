@@ -36,20 +36,19 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
         while ((line = reader.readLine()) != null) {
 
             String[] parts = line.trim().split(",");
-            if (parts.length >=3) {
+            if (parts.length >= 3) {
                 BorrowedBook borrowedBook = new BorrowedBook();
                 borrowedBook.setBorrowedDate(LocalDate.parse(parts[0].trim()));
                 borrowedBook.setReturnDate(LocalDate.parse(parts[1].trim()));
-                Book book=null;
-                Optional<Book> books=bookService.findById(Long.valueOf(parts[2]));
-                if(books.isPresent())
-                {
-                    book=books.get();
+                Book book = null;
+                Optional<Book> books = bookService.findById(Long.valueOf(parts[2]));
+                if (books.isPresent()) {
+                    book = books.get();
 
                 }
 
-                Optional<Member> members=memberService.findById(Long.valueOf(parts[3]));
-                if(members.isPresent()) {
+                Optional<Member> members = memberService.findById(Long.valueOf(parts[3]));
+                if (members.isPresent()) {
                     Member member = members.get();
                     member.setBook(book);
                     book.setCopies(book.getCopies() - 1);

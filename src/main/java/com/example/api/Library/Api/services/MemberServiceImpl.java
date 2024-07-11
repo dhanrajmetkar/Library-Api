@@ -1,6 +1,5 @@
 package com.example.api.Library.Api.services;
 
-import com.example.api.Library.Api.entity.Book;
 import com.example.api.Library.Api.entity.Member;
 import com.example.api.Library.Api.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<Member> getAllMembers() {
-       return memberRepository.findAll();
+        return memberRepository.findAll();
 
     }
 

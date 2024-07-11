@@ -68,12 +68,6 @@ public class MainController {
 
     }
 
-    @PutMapping("/updateBook")
-     Book updateBook(@RequestParam("book_id") Long bookid,@RequestParam("copies") int copies )
-    {
-     return bookService.updateBook(bookid,copies);
-    }
-
 }
 
 
