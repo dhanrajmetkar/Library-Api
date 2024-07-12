@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+import java.util.Locale;
+import java.util.Map;
 
 @RestController
 public class MainController {
@@ -67,7 +68,11 @@ public class MainController {
        return borrowedBookService.getAllBorrowedBooks();
 
     }
-
+    @GetMapping("/dueBooks")
+    public Map<LocalDate,Book> deuBooks()
+    {
+      return borrowedBookService.getAllDeuBooks();
+    }
 }
 
 

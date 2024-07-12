@@ -11,9 +11,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class BorrowedBookServiceImpl implements BorrowedBookService {
@@ -76,6 +75,29 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
     public List<BorrowedBook> getAllBorrowedBooks() {
         return borrowedBookRepository.findAll();
     }
+
+    @Override
+    public Map<LocalDate,Book> getAllDeuBooks() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDate localDate = localDateTime.toLocalDate();
+
+      List<BorrowedBook> borrowedBooks=borrowedBookRepository.findAll();
+
+      Map<LocalDate,Book> mp=new TreeMap<>();
+      for(BorrowedBook b:borrowedBooks)
+      {
+          if(b.getReturnDate().isAfter(localDate))
+          {
+             mp.put(b.getReturnDate(),b.getBook());
+          }
+      }
+      if(!mp.isEmpty())
+        return mp;
+      else
+          return null;
+    }
+
+
 
 
 }
