@@ -81,15 +81,12 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
         LocalDateTime localDateTime = LocalDateTime.now();
         LocalDate localDate = localDateTime.toLocalDate();
 
-      List<BorrowedBook> borrowedBooks=borrowedBookRepository.findAll();
+      List<BorrowedBook> borrowedBooks=borrowedBookRepository.findAllBorrowedBook(localDate);
 
       Map<LocalDate,Book> mp=new TreeMap<>();
       for(BorrowedBook b:borrowedBooks)
       {
-          if(b.getReturnDate().isAfter(localDate))
-          {
              mp.put(b.getReturnDate(),b.getBook());
-          }
       }
       if(!mp.isEmpty())
         return mp;
