@@ -23,6 +23,5 @@ public interface BorrowedBookRepository extends JpaRepository<BorrowedBook, Long
 
     boolean existsByMemberAndBook(Member member, Book book);
 
-    @Override
     Page<BorrowedBook> findAll(Pageable pageable);
 }

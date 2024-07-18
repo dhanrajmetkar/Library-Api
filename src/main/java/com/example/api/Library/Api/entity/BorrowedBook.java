@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+
 @Component
 @Entity
 @Data
@@ -20,7 +21,7 @@ public class BorrowedBook {
     Long id;
     LocalDate borrowedDate;
     LocalDate returnDate;
-    Boolean returned=false;
+    Boolean returned = false;
     @ManyToOne(
             cascade = CascadeType.ALL
     )

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -16,7 +17,7 @@ public interface BorrowedBookService {
     Page<BorrowedBook> getAllBorrowedBooks(int pageNo, int pageSize);
 
 
-    Map<LocalDate,Book> getAllDeuBooks();
+    Map<LocalDate, List<Book>> getAllDeuBooks();
 
 
     BorrowedBook returnBook(int b_id, int mem_id);

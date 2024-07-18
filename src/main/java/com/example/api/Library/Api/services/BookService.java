@@ -13,11 +13,7 @@ public interface BookService {
 
     Page<Book> readAllBooks(int pageNumber, int pageSize);
 
-    Book updateBook(Long bookid, int copies);
-
     Optional<Book> findById(Long aLong);
-
-    Book findByTitle(String title);
 
     void saveBook(Book book);
 

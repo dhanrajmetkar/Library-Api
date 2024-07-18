@@ -1,7 +1,6 @@
 package com.example.api.Library.Api.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +18,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Book {
     @Id
-            @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
     String title;
     String author;
@@ -28,10 +27,11 @@ public class Book {
     @OneToMany(
             mappedBy = "book",
             cascade = CascadeType.ALL,
-            fetch =FetchType.EAGER
+            fetch = FetchType.EAGER
     )
     @JsonBackReference
-    private List<BorrowedBook> borrowed_Book=new ArrayList<>();
+    private List<BorrowedBook> borrowed_Book = new ArrayList<>();
+
     @Override
     public String toString() {
         return "Book{" +
@@ -39,6 +39,7 @@ public class Book {
                 ", title='" + title + '\'' +
                 '}';
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, title);

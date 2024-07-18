@@ -17,9 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -33,58 +31,57 @@ public class MainController {
     @Autowired
     StorageService storageService;
 
-    @PostMapping(value = "/upload",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> allFiles(@RequestParam("files")MultipartFile[] files) throws IOException {
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> allFiles(@RequestParam("files") MultipartFile[] files) throws IOException {
 
         storageService.store(files[0]);
         storageService.store(files[1]);
         storageService.store(files[2]);
-        if (! bookService.readBook()) {
+        if (!bookService.readBook()) {
             bookService.addAllBooksToDB();
         }
         if (!memberService.readMember()) {
             memberService.addAllMembersToDB();
         }
-        if(borrowedBookService.readBorrowedBook()){
+        if (borrowedBookService.readBorrowedBook()) {
             borrowedBookService.addAllBorrowedBooksToDB();
         }
         return ResponseEntity.ok("file Uploaded successfully ");
     }
 
     @GetMapping("/allBooks/{pageNo}")
-    public ResponseEntity<List<Book>> readAllBooks(@PathVariable("pageNo") Integer pageNo)
-    {
-        int pageSize=3;
-        Page<Book> booksPage=bookService.readAllBooks(pageNo,pageSize);
+    public ResponseEntity<List<Book>> readAllBooks(@PathVariable("pageNo") Integer pageNo) {
+        int pageSize = 3;
+        Page<Book> booksPage = bookService.readAllBooks(pageNo, pageSize);
         List<Book> books = booksPage.getContent();
-        return ResponseEntity.ok(books) ;
+        return ResponseEntity.ok(books);
     }
 
     @GetMapping("/allMembers/{pageNo}")
-    public ResponseEntity<List<Member>> getAllMembers(@PathVariable("pageNo") int pageNo){
-        int pageSize=3;
-        Page<Member> membersPage=memberService.getAllMembers(pageNo,pageSize);
-        List<Member> memberList=membersPage.getContent();
-        return  ResponseEntity.ok(memberList);
+    public ResponseEntity<List<Member>> getAllMembers(@PathVariable("pageNo") int pageNo) {
+        int pageSize = 3;
+        Page<Member> membersPage = memberService.getAllMembers(pageNo, pageSize);
+        List<Member> memberList = membersPage.getContent();
+        return ResponseEntity.ok(memberList);
     }
 
     @GetMapping("/allBorrowedBooks/{pageNo}")
-    public ResponseEntity<List<BorrowedBook>> getAllBorrowedBooks(@PathVariable("pageNo") int pageNo){
-        int pageSize=3;
-          Page<BorrowedBook> borrowedBooks=borrowedBookService.getAllBorrowedBooks(pageNo,pageSize);
-        List<BorrowedBook> borrowedBookList=borrowedBooks.getContent();
-        return  ResponseEntity.ok(borrowedBookList);
+    public ResponseEntity<List<BorrowedBook>> getAllBorrowedBooks(@PathVariable("pageNo") int pageNo) {
+        int pageSize = 3;
+        Page<BorrowedBook> borrowedBooks = borrowedBookService.getAllBorrowedBooks(pageNo, pageSize);
+        List<BorrowedBook> borrowedBookList = borrowedBooks.getContent();
+        return ResponseEntity.ok(borrowedBookList);
     }
+
     @GetMapping("/dueBooks")
-    public Map<LocalDate,Book> deuBooks()
-    {
-      return borrowedBookService.getAllDeuBooks();
+    public Map<LocalDate, List<Book>> deuBooks() {
+        return borrowedBookService.getAllDeuBooks();
     }
+
+
     @PostMapping("/returnBook")
-    public BorrowedBook returnBook(@Param("book_id") int bookId,@RequestParam("member_id") int mem_id)
-    {
-        BorrowedBook b=borrowedBookService.returnBook(bookId,mem_id);
-        return b;
+    public BorrowedBook returnBook(@Param("book_id") int bookId, @RequestParam("member_id") int mem_id) {
+        return borrowedBookService.returnBook(bookId, mem_id);
     }
 }
 

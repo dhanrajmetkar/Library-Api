@@ -21,8 +21,6 @@ import java.util.*;
 public class BorrowedBookServiceImpl implements BorrowedBookService {
 
 
-    private final String filePath = "/home/nityaobject/Desktop/Spring Boot/Library-Api/upload-dir/borrowedBooks.txt";
-
     @Autowired
     BorrowedBookRepository borrowedBookRepository;
     @Autowired
@@ -34,6 +32,7 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
     public List<BorrowedBook> readBorrowedBooksFromFile() throws IOException {
 
         List<BorrowedBook> borrowedBooks = new ArrayList<>();
+        String filePath = "/home/nityaobject/Desktop/Spring Boot/Library-Api/upload-dir/borrowedBooks.txt";
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
         while ((line = reader.readLine()) != null) {
@@ -93,19 +92,30 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
     }
 
     @Override
-    public Map<LocalDate,Book> getAllDeuBooks() {
+    public Map<LocalDate, List<Book>> getAllDeuBooks() {
         LocalDateTime localDateTime = LocalDateTime.now();
         LocalDate localDate = localDateTime.toLocalDate();
 
       List<BorrowedBook> borrowedBooks=borrowedBookRepository.findAllBorrowedBook(localDate);
-
-      Map<LocalDate,Book> mp=new TreeMap<>();
-      for(BorrowedBook b:borrowedBooks)
+        System.out.println(borrowedBooks.size());
+        Map<LocalDate, List<Book>> mp = new TreeMap<>();
+        borrowedBooks.forEach(System.out::println);
+        borrowedBooks.forEach(borrowedBook ->
       {
-             mp.put(b.getReturnDate(),b.getBook());
-      }
-      if(!mp.isEmpty())
-        return mp;
+          if (!borrowedBook.getReturned()) {
+              if (mp.containsKey(borrowedBook.getReturnDate())) {
+                  mp.get(borrowedBook.getReturnDate()).add(borrowedBook.getBook());
+              } else {
+                  mp.put(borrowedBook.getReturnDate(), new ArrayList<>());
+                  mp.get(borrowedBook.getReturnDate()).add(borrowedBook.getBook());
+              }
+          }
+      });
+
+        if (!mp.isEmpty()) {
+            System.out.println(mp);
+            return mp;
+        }
       else
          throw new RuntimeException("No Books due :");
     }
@@ -134,6 +144,6 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
 
     @Override
     public boolean readBorrowedBook() {
-        return borrowedBookRepository.existsById(Long.valueOf(1));
+        return borrowedBookRepository.existsById(1L);
     }
 }

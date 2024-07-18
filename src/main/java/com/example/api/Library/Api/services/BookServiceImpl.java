@@ -58,19 +58,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book updateBook(Long bookid, int copies) {
-        return null;
-    }
-
-    @Override
     public Optional<Book> findById(Long aLong) {
         return bookRepository.findById(aLong);
-    }
-
-    @Override
-    public Book findByTitle(String title) {
-        Book book = bookRepository.findByTitleIgnoreCase(title);
-        return book;
     }
 
     @Override
@@ -80,6 +69,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Boolean readBook() {
-        return bookRepository.existsById(Long.valueOf(1));
+        return bookRepository.existsById(1L);
     }
+
 }

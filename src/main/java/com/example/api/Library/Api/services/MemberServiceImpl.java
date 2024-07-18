@@ -20,8 +20,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     MemberRepository memberRepository;
-    @Autowired
-    BookService bookService;
 
     public void addAllMembersToDB() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -53,6 +51,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean readMember() {
-        return memberRepository.existsById(Long.valueOf(1));
+        return memberRepository.existsById(1L);
     }
 }
