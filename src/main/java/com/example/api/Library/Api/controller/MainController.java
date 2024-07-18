@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class MainController {
@@ -86,7 +87,7 @@ public class MainController {
         return borrowedBookService.returnBook(bookId, mem_id);
     }
     @GetMapping("/borrowBook/{title}")
-    public String borroBook(@PathVariable("title") String title )
+    public String borrowBook(@PathVariable("title") String title )
     {
         Book book=bookService.findByTitle(title.trim());
         if(book==null)
@@ -98,6 +99,17 @@ public class MainController {
         {
             return borrowedBookService.checkAvailibilityofBook(book);
         }
+    }
+    @GetMapping("/checkBookInfo/{id}")
+    public  ResponseEntity<?> bookInfo(@PathVariable("id") Long id )
+    {
+        List<BorrowedBook>  borrowedBooks= borrowedBookService.checkBookInfo(id);
+        if(!borrowedBooks.isEmpty())
+            return ResponseEntity.of(Optional.of(borrowedBooks));
+        Optional<Book> book=bookService.findById(id);
+        if(book.isEmpty())
+             throw new RuntimeException("book not found with given id");
+        return ResponseEntity.of(book);
     }
 }
 

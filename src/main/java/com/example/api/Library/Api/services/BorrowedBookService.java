@@ -27,4 +27,6 @@ public interface BorrowedBookService {
     Map<LocalDate, List<Book>> getAllDeuBooksByDate(LocalDate date);
 
     String checkAvailibilityofBook(Book book);
+
+    List<BorrowedBook> checkBookInfo(Long id);
 }

@@ -167,6 +167,11 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
         return "you will get the book by "+localDate.toString();
     }
 
+    @Override
+    public List<BorrowedBook> checkBookInfo(Long id) {
+        return borrowedBookRepository.findByBook_id(id);
+    }
+
     private Map<LocalDate, List<Book>> insertIntoMap(List<BorrowedBook> borrowedBooks) {
         Map<LocalDate, List<Book>> mp=new HashMap<>();
         borrowedBooks.forEach(borrowedBook ->
