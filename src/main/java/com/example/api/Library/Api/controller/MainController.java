@@ -8,6 +8,7 @@ import com.example.api.Library.Api.services.BorrowedBookService;
 import com.example.api.Library.Api.services.MemberService;
 import com.example.api.Library.Api.services.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,6 +73,12 @@ public class MainController {
     public Map<LocalDate,Book> deuBooks()
     {
       return borrowedBookService.getAllDeuBooks();
+    }
+    @PostMapping("/returnBook")
+    public BorrowedBook returnBook(@Param("book_id") int bookId,@RequestParam("member_id") int mem_id)
+    {
+        BorrowedBook b=borrowedBookService.returnBook(bookId,mem_id);
+        return b;
     }
 }
 

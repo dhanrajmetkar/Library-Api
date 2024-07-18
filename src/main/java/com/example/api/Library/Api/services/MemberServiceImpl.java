@@ -1,5 +1,6 @@
 package com.example.api.Library.Api.services;
 
+import com.example.api.Library.Api.entity.Book;
 import com.example.api.Library.Api.entity.Member;
 import com.example.api.Library.Api.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +26,17 @@ public class MemberServiceImpl implements MemberService {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
         while ((line = reader.readLine()) != null) {
-            Member member = new Member();
-            member.setName(line);
-            saveMember(member);
+            if(line.trim() !="") {
+                Member member = new Member();
+                member.setName(line);
+                saveMember(member);
+            }
         }
     }
 
     @Override
     public List<Member> getAllMembers() {
         return memberRepository.findAll();
-
     }
 
     @Override

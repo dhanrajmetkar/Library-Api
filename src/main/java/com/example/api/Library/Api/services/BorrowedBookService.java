@@ -17,4 +17,7 @@ public interface BorrowedBookService {
 
 
     Map<LocalDate,Book> getAllDeuBooks();
+
+
+    BorrowedBook returnBook(int b_id, int mem_id);
 }

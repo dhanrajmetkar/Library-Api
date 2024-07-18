@@ -20,6 +20,7 @@ public class BorrowedBook {
     Long id;
     LocalDate borrowedDate;
     LocalDate returnDate;
+    Boolean returned=false;
     @ManyToOne(
             cascade = CascadeType.ALL
     )

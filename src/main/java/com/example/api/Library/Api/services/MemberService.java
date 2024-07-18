@@ -1,5 +1,6 @@
 package com.example.api.Library.Api.services;
 
+import com.example.api.Library.Api.entity.Book;
 import com.example.api.Library.Api.entity.Member;
 import org.springframework.stereotype.Service;
 
@@ -16,4 +17,5 @@ public interface MemberService {
     Optional<Member> findById(Long aLong);
 
     void saveMember(Member member1);
+
 }

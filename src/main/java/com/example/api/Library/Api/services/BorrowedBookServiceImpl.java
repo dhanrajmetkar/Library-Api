@@ -27,6 +27,7 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
     @Autowired
     MemberService memberService;
 
+
     public List<BorrowedBook> readBorrowedBooksFromFile() throws IOException {
 
         List<BorrowedBook> borrowedBooks = new ArrayList<>();
@@ -39,22 +40,33 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
                 BorrowedBook borrowedBook = new BorrowedBook();
                 borrowedBook.setBorrowedDate(LocalDate.parse(parts[0].trim()));
                 borrowedBook.setReturnDate(LocalDate.parse(parts[1].trim()));
-                Book book = null;
+                Book book;
                 Optional<Book> books = bookService.findById(Long.valueOf(parts[2]));
                 if (books.isPresent()) {
                     book = books.get();
-
+                    if(book.getCopies()<=0)
+                        throw new RuntimeException("No more copies of this book are available ");
+                }
+                else{
+                    throw new RuntimeException("Book Not found With given Id  :");
                 }
 
                 Optional<Member> members = memberService.findById(Long.valueOf(parts[3]));
                 if (members.isPresent()) {
                     Member member = members.get();
-                    member.setBook(book);
+                    boolean alreadyBorrowed = borrowedBookRepository.existsByMemberAndBook(member, book);
+
+                    if (alreadyBorrowed) {
+                        throw new RuntimeException("A member can only borrow one copy of each book at a time.");
+                    }
+
                     book.setCopies(book.getCopies() - 1);
                     borrowedBook.setBook(book);
                     borrowedBook.setMember(member);
                     bookService.saveBook(book);
-                    memberService.saveMember(member);
+                }
+                else {
+                    throw new RuntimeException("Member with given id not found");
                 }
                 borrowedBooks.add(borrowedBook);
             }
@@ -91,10 +103,28 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
       if(!mp.isEmpty())
         return mp;
       else
-          return null;
+         throw new RuntimeException("No Books due :");
     }
 
+    @Override
+    public  BorrowedBook returnBook(int book_id, int mem_id) {
 
+        BorrowedBook b=borrowedBookRepository.findBorrowedBookByBook_idAndMember_id(book_id,mem_id);
+        if(b==null)
+            throw new RuntimeException("Book not found with given member");
 
-
+        if(!b.getReturned())
+            {
+                b.getBook().setCopies(b.getBook().getCopies()+1);
+                bookService.saveBook(b.getBook());
+                b.setReturned(true);
+                b.setBook(null);
+                b.setMember(null);
+                borrowedBookRepository.save(b);
+            }
+        else {
+            throw new RuntimeException("The given book is already Returned");
+            }
+        return b;
+    }
 }
