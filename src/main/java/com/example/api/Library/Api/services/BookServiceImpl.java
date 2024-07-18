@@ -3,6 +3,9 @@ package com.example.api.Library.Api.services;
 import com.example.api.Library.Api.entity.Book;
 import com.example.api.Library.Api.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -49,8 +52,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> readAllBooks() {
-        return bookRepository.findAll();
+    public Page<Book> readAllBooks(int pageNumber, int pageSize) {
+        Pageable pageRequest = PageRequest.of(pageNumber, pageSize);
+        return bookRepository.findAll(pageRequest);
     }
 
     @Override
@@ -72,5 +76,10 @@ public class BookServiceImpl implements BookService {
     @Override
     public void saveBook(Book book) {
         bookRepository.save(book);
+    }
+
+    @Override
+    public Boolean readBook() {
+        return bookRepository.existsById(Long.valueOf(1));
     }
 }

@@ -5,6 +5,9 @@ import com.example.api.Library.Api.entity.BorrowedBook;
 import com.example.api.Library.Api.entity.Member;
 import com.example.api.Library.Api.repository.BorrowedBookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -84,8 +87,9 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
     }
 
     @Override
-    public List<BorrowedBook> getAllBorrowedBooks() {
-        return borrowedBookRepository.findAll();
+    public Page<BorrowedBook> getAllBorrowedBooks(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        return borrowedBookRepository.findAll(pageable);
     }
 
     @Override
@@ -126,5 +130,10 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
             throw new RuntimeException("The given book is already Returned");
             }
         return b;
+    }
+
+    @Override
+    public boolean readBorrowedBook() {
+        return borrowedBookRepository.existsById(Long.valueOf(1));
     }
 }

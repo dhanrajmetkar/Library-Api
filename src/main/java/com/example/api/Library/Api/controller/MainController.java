@@ -8,6 +8,7 @@ import com.example.api.Library.Api.services.BorrowedBookService;
 import com.example.api.Library.Api.services.MemberService;
 import com.example.api.Library.Api.services.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,37 +39,41 @@ public class MainController {
         storageService.store(files[0]);
         storageService.store(files[1]);
         storageService.store(files[2]);
-        List<Book> books = bookService.readAllBooks();
-        if (books.isEmpty()) {
+        if (! bookService.readBook()) {
             bookService.addAllBooksToDB();
         }
-        List<Member> members = memberService.getAllMembers();
-        if (members.isEmpty()) {
+        if (!memberService.readMember()) {
             memberService.addAllMembersToDB();
         }
-        List<BorrowedBook> borrowedBooks=borrowedBookService.getAllBorrowedBooks();
-        if(borrowedBooks.isEmpty()){
+        if(borrowedBookService.readBorrowedBook()){
             borrowedBookService.addAllBorrowedBooksToDB();
         }
-
         return ResponseEntity.ok("file Uploaded successfully ");
     }
 
-    @GetMapping("/allBooks")
-    public List<Book> readAllBooks()
+    @GetMapping("/allBooks/{pageNo}")
+    public ResponseEntity<List<Book>> readAllBooks(@PathVariable("pageNo") Integer pageNo)
     {
-        return bookService.readAllBooks();
+        int pageSize=3;
+        Page<Book> booksPage=bookService.readAllBooks(pageNo,pageSize);
+        List<Book> books = booksPage.getContent();
+        return ResponseEntity.ok(books) ;
     }
 
-    @GetMapping("/allMembers")
-    public List<Member> getAllMembers(){
-     return  memberService.getAllMembers();
+    @GetMapping("/allMembers/{pageNo}")
+    public ResponseEntity<List<Member>> getAllMembers(@PathVariable("pageNo") int pageNo){
+        int pageSize=3;
+        Page<Member> membersPage=memberService.getAllMembers(pageNo,pageSize);
+        List<Member> memberList=membersPage.getContent();
+        return  ResponseEntity.ok(memberList);
     }
 
-    @GetMapping("/allBorrowedBooks")
-    public List<BorrowedBook> getAllBorrowedBooks(){
-       return borrowedBookService.getAllBorrowedBooks();
-
+    @GetMapping("/allBorrowedBooks/{pageNo}")
+    public ResponseEntity<List<BorrowedBook>> getAllBorrowedBooks(@PathVariable("pageNo") int pageNo){
+        int pageSize=3;
+          Page<BorrowedBook> borrowedBooks=borrowedBookService.getAllBorrowedBooks(pageNo,pageSize);
+        List<BorrowedBook> borrowedBookList=borrowedBooks.getContent();
+        return  ResponseEntity.ok(borrowedBookList);
     }
     @GetMapping("/dueBooks")
     public Map<LocalDate,Book> deuBooks()
