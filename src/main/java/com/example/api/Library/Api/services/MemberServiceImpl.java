@@ -16,16 +16,15 @@ import java.util.Optional;
 @Service
 public class MemberServiceImpl implements MemberService {
 
-    private final String filePath = "/home/nityaobject/Desktop/Spring Boot/Library-Api/upload-dir/members.txt";
-
     @Autowired
     MemberRepository memberRepository;
 
     public void addAllMembersToDB() throws IOException {
+        String filePath = "/home/nityaobject/Desktop/Spring Boot/Library-Api/upload-dir/members.txt";
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
         while ((line = reader.readLine()) != null) {
-            if(line.trim() !="") {
+            if(!line.trim().isEmpty()) {
                 Member member = new Member();
                 member.setName(line);
                 saveMember(member);
