@@ -24,4 +24,8 @@ public interface BorrowedBookRepository extends JpaRepository<BorrowedBook, Long
     boolean existsByMemberAndBook(Member member, Book book);
 
     Page<BorrowedBook> findAll(Pageable pageable);
+    @Query(" Select b from BorrowedBook b where b.returnDate = :localDate "  )
+    List<BorrowedBook> findAllBorrowedBookDate(LocalDate localDate);
+
+    List<BorrowedBook> findByBook_id(Long id);
 }

@@ -18,4 +18,6 @@ public interface BookService {
     void saveBook(Book book);
 
     Boolean readBook();
+
+    Book findByTitle(String title);
 }

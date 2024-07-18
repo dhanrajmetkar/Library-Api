@@ -23,4 +23,8 @@ public interface BorrowedBookService {
     BorrowedBook returnBook(int b_id, int mem_id);
 
     boolean readBorrowedBook();
+
+    Map<LocalDate, List<Book>> getAllDeuBooksByDate(LocalDate date);
+
+    String checkAvailibilityofBook(Book book);
 }

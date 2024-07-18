@@ -77,11 +77,27 @@ public class MainController {
     public Map<LocalDate, List<Book>> deuBooks() {
         return borrowedBookService.getAllDeuBooks();
     }
-
-
+    @GetMapping("/dueBooksByDate/{date}")
+    public Map<LocalDate, List<Book>> deuBooksByDate(@PathVariable("date")LocalDate date) {
+        return borrowedBookService.getAllDeuBooksByDate(date);
+    }
     @PostMapping("/returnBook")
     public BorrowedBook returnBook(@Param("book_id") int bookId, @RequestParam("member_id") int mem_id) {
         return borrowedBookService.returnBook(bookId, mem_id);
+    }
+    @GetMapping("/borrowBook/{title}")
+    public String borroBook(@PathVariable("title") String title )
+    {
+        Book book=bookService.findByTitle(title.trim());
+        if(book==null)
+            throw new RuntimeException("book with given title not found :");
+        if(book.getCopies()>0) {
+            return "You can borrow books :";
+        }
+        else
+        {
+            return borrowedBookService.checkAvailibilityofBook(book);
+        }
     }
 }
 

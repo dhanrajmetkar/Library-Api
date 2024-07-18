@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class BorrowedBookServiceImpl implements BorrowedBookService {
@@ -90,36 +91,6 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return borrowedBookRepository.findAll(pageable);
     }
-
-    @Override
-    public Map<LocalDate, List<Book>> getAllDeuBooks() {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        LocalDate localDate = localDateTime.toLocalDate();
-
-      List<BorrowedBook> borrowedBooks=borrowedBookRepository.findAllBorrowedBook(localDate);
-        System.out.println(borrowedBooks.size());
-        Map<LocalDate, List<Book>> mp = new TreeMap<>();
-        borrowedBooks.forEach(System.out::println);
-        borrowedBooks.forEach(borrowedBook ->
-      {
-          if (!borrowedBook.getReturned()) {
-              if (mp.containsKey(borrowedBook.getReturnDate())) {
-                  mp.get(borrowedBook.getReturnDate()).add(borrowedBook.getBook());
-              } else {
-                  mp.put(borrowedBook.getReturnDate(), new ArrayList<>());
-                  mp.get(borrowedBook.getReturnDate()).add(borrowedBook.getBook());
-              }
-          }
-      });
-
-        if (!mp.isEmpty()) {
-            System.out.println(mp);
-            return mp;
-        }
-      else
-         throw new RuntimeException("No Books due :");
-    }
-
     @Override
     public  BorrowedBook returnBook(int book_id, int mem_id) {
 
@@ -145,5 +116,70 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
     @Override
     public boolean readBorrowedBook() {
         return borrowedBookRepository.existsById(1L);
+    }
+
+    @Override
+    public Map<LocalDate, List<Book>> getAllDeuBooks() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDate localDate = localDateTime.toLocalDate();
+
+        List<BorrowedBook> borrowedBooks=borrowedBookRepository.findAllBorrowedBook(localDate);
+        Map<LocalDate, List<Book>> mp = insertIntoMap(borrowedBooks);
+        if (!mp.isEmpty()) {
+            return mp;
+        }
+        else
+            throw new RuntimeException("No Books due :");
+    }
+
+    @Override
+    public Map<LocalDate, List<Book>> getAllDeuBooksByDate(LocalDate date) {
+
+        List<BorrowedBook> borrowedBooks=borrowedBookRepository.findAllBorrowedBookDate(date);
+        if(!borrowedBooks.isEmpty()) {
+            Map<LocalDate, List<Book>> mp = insertIntoMap(borrowedBooks);
+        }
+        else {
+            throw new RuntimeException("No books due for the given date :");
+        }
+        return insertIntoMap(borrowedBooks);
+    }
+
+    @Override
+    public String checkAvailibilityofBook(Book book) {
+        LocalDate localDate=null;
+        List<BorrowedBook> borrowedBooks=borrowedBookRepository.findByBook_id(book.getId());
+        for(BorrowedBook borrowedBook:borrowedBooks)
+        {
+            if(localDate==null)
+            {
+                localDate=borrowedBook.getReturnDate();
+            }
+            else {
+                if(localDate.isAfter(borrowedBook.getReturnDate()))
+                {
+                    localDate=borrowedBook.getReturnDate();
+                }
+            }
+        }
+        assert localDate != null;
+
+        return "you will get the book by "+localDate.toString();
+    }
+
+    private Map<LocalDate, List<Book>> insertIntoMap(List<BorrowedBook> borrowedBooks) {
+        Map<LocalDate, List<Book>> mp=new HashMap<>();
+        borrowedBooks.forEach(borrowedBook ->
+        {
+            if (!borrowedBook.getReturned()) {
+                if (mp.containsKey(borrowedBook.getReturnDate())) {
+                    mp.get(borrowedBook.getReturnDate()).add(borrowedBook.getBook());
+                } else {
+                    mp.put(borrowedBook.getReturnDate(), new ArrayList<>());
+                    mp.get(borrowedBook.getReturnDate()).add(borrowedBook.getBook());
+                }
+            }
+        });
+        return mp;
     }
 }

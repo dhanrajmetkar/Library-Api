@@ -72,4 +72,9 @@ public class BookServiceImpl implements BookService {
         return bookRepository.existsById(1L);
     }
 
+    @Override
+    public Book findByTitle(String title) {
+       return bookRepository.findByTitleIgnoreCase(title);
+    }
+
 }
