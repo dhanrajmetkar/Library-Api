@@ -3,6 +3,7 @@ package com.example.api.Library.Api.controller;
 import com.example.api.Library.Api.entity.Book;
 import com.example.api.Library.Api.entity.BorrowedBook;
 import com.example.api.Library.Api.entity.Member;
+import com.example.api.Library.Api.error.ResourceNotFoundException;
 import com.example.api.Library.Api.services.BookService;
 import com.example.api.Library.Api.services.BorrowedBookService;
 import com.example.api.Library.Api.services.MemberService;
@@ -33,7 +34,7 @@ public class MainController {
     StorageService storageService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> allFiles(@RequestParam("files") MultipartFile[] files) throws IOException {
+    public ResponseEntity<String> allFiles(@RequestParam("files") MultipartFile[] files) throws IOException, ResourceNotFoundException {
 
         storageService.store(files[0]);
         storageService.store(files[1]);
@@ -75,23 +76,22 @@ public class MainController {
     }
 
     @GetMapping("/dueBooks")
-    public Map<LocalDate, List<Book>> deuBooks() {
+    public Map<LocalDate, List<Book>> deuBooks() throws ResourceNotFoundException {
         return borrowedBookService.getAllDeuBooks();
     }
     @GetMapping("/dueBooksByDate/{date}")
-    public Map<LocalDate, List<Book>> deuBooksByDate(@PathVariable("date")LocalDate date) {
+    public Map<LocalDate, List<Book>> deuBooksByDate(@PathVariable("date")LocalDate date) throws ResourceNotFoundException {
         return borrowedBookService.getAllDeuBooksByDate(date);
     }
     @PostMapping("/returnBook")
-    public BorrowedBook returnBook(@Param("book_id") int bookId, @RequestParam("member_id") int mem_id) {
+    public BorrowedBook returnBook(@Param("book_id") int bookId, @RequestParam("member_id") int mem_id) throws ResourceNotFoundException {
         return borrowedBookService.returnBook(bookId, mem_id);
     }
     @GetMapping("/borrowBook/{title}")
-    public String borrowBook(@PathVariable("title") String title )
-    {
+    public String borrowBook(@PathVariable("title") String title ) throws ResourceNotFoundException {
         Book book=bookService.findByTitle(title.trim());
         if(book==null)
-            throw new RuntimeException("book with given title not found :");
+            throw new ResourceNotFoundException("book with given title not found :");
         if(book.getCopies()>0) {
             return "You can borrow books :";
         }
@@ -101,14 +101,13 @@ public class MainController {
         }
     }
     @GetMapping("/checkBookInfo/{id}")
-    public  ResponseEntity<?> bookInfo(@PathVariable("id") Long id )
-    {
+    public  ResponseEntity<?> bookInfo(@PathVariable("id") Long id ) throws ResourceNotFoundException {
         List<BorrowedBook>  borrowedBooks= borrowedBookService.checkBookInfo(id);
         if(!borrowedBooks.isEmpty())
             return ResponseEntity.of(Optional.of(borrowedBooks));
         Optional<Book> book=bookService.findById(id);
         if(book.isEmpty())
-             throw new RuntimeException("book not found with given id");
+             throw new ResourceNotFoundException("book not found with given id");
         return ResponseEntity.of(book);
     }
 }

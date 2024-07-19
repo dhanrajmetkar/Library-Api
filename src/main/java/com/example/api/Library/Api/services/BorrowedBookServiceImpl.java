@@ -3,6 +3,7 @@ package com.example.api.Library.Api.services;
 import com.example.api.Library.Api.entity.Book;
 import com.example.api.Library.Api.entity.BorrowedBook;
 import com.example.api.Library.Api.entity.Member;
+import com.example.api.Library.Api.error.ResourceNotFoundException;
 import com.example.api.Library.Api.repository.BorrowedBookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class BorrowedBookServiceImpl implements BorrowedBookService {
@@ -30,7 +30,7 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
     MemberService memberService;
 
 
-    public List<BorrowedBook> readBorrowedBooksFromFile() throws IOException {
+    public List<BorrowedBook> readBorrowedBooksFromFile() throws IOException, ResourceNotFoundException {
 
         List<BorrowedBook> borrowedBooks = new ArrayList<>();
         String filePath = "/home/nityaobject/Desktop/Spring Boot/Library-Api/upload-dir/borrowedBooks.txt";
@@ -48,10 +48,10 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
                 if (books.isPresent()) {
                     book = books.get();
                     if(book.getCopies()<=0)
-                        throw new RuntimeException("No more copies of this book are available ");
+                        throw new ResourceNotFoundException("No more copies of this book are available ");
                 }
                 else{
-                    throw new RuntimeException("Book Not found With given Id  :");
+                    throw new ResourceNotFoundException("Book Not found With given Id  :");
                 }
 
                 Optional<Member> members = memberService.findById(Long.valueOf(parts[3]));
@@ -60,7 +60,7 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
                     boolean alreadyBorrowed = borrowedBookRepository.existsByMemberAndBook(member, book);
 
                     if (alreadyBorrowed) {
-                        throw new RuntimeException("A member can only borrow one copy of each book at a time.");
+                        throw new ResourceNotFoundException("A member can only borrow one copy of each book at a time.");
                     }
 
                     book.setCopies(book.getCopies() - 1);
@@ -69,7 +69,7 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
                     bookService.saveBook(book);
                 }
                 else {
-                    throw new RuntimeException("Member with given id not found");
+                    throw new ResourceNotFoundException("Member with given id not found");
                 }
                 borrowedBooks.add(borrowedBook);
             }
@@ -79,7 +79,7 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
 
     }
 
-    public void addAllBorrowedBooksToDB() throws IOException {
+    public void addAllBorrowedBooksToDB() throws IOException, ResourceNotFoundException {
         List<BorrowedBook> BorrowedBooks = readBorrowedBooksFromFile();
         for (BorrowedBook borrowedBook : BorrowedBooks) {
             borrowedBookRepository.save(borrowedBook);
@@ -92,23 +92,21 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
         return borrowedBookRepository.findAll(pageable);
     }
     @Override
-    public  BorrowedBook returnBook(int book_id, int mem_id) {
+    public  BorrowedBook returnBook(int book_id, int mem_id) throws ResourceNotFoundException {
 
         BorrowedBook b=borrowedBookRepository.findBorrowedBookByBook_idAndMember_id(book_id,mem_id);
         if(b==null)
-            throw new RuntimeException("Book not found with given member");
+            throw new ResourceNotFoundException("Book not found with given member or member does not exist ");
 
         if(!b.getReturned())
             {
                 b.getBook().setCopies(b.getBook().getCopies()+1);
                 bookService.saveBook(b.getBook());
                 b.setReturned(true);
-                b.setBook(null);
-                b.setMember(null);
                 borrowedBookRepository.save(b);
             }
         else {
-            throw new RuntimeException("The given book is already Returned");
+            throw new ResourceNotFoundException("The given book is already Returned");
             }
         return b;
     }
@@ -119,7 +117,7 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
     }
 
     @Override
-    public Map<LocalDate, List<Book>> getAllDeuBooks() {
+    public Map<LocalDate, List<Book>> getAllDeuBooks() throws ResourceNotFoundException {
         LocalDateTime localDateTime = LocalDateTime.now();
         LocalDate localDate = localDateTime.toLocalDate();
 
@@ -129,20 +127,19 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
             return mp;
         }
         else
-            throw new RuntimeException("No Books due :");
+            throw new ResourceNotFoundException("No Books due :");
     }
 
     @Override
-    public Map<LocalDate, List<Book>> getAllDeuBooksByDate(LocalDate date) {
+    public Map<LocalDate, List<Book>> getAllDeuBooksByDate(LocalDate date) throws ResourceNotFoundException {
 
         List<BorrowedBook> borrowedBooks=borrowedBookRepository.findAllBorrowedBookDate(date);
         if(!borrowedBooks.isEmpty()) {
-            Map<LocalDate, List<Book>> mp = insertIntoMap(borrowedBooks);
+            return insertIntoMap(borrowedBooks);
         }
         else {
-            throw new RuntimeException("No books due for the given date :");
+            throw new ResourceNotFoundException("No books due for the given date :");
         }
-        return insertIntoMap(borrowedBooks);
     }
 
     @Override
@@ -164,7 +161,7 @@ public class BorrowedBookServiceImpl implements BorrowedBookService {
         }
         assert localDate != null;
 
-        return "you will get the book by "+localDate.toString();
+        return "you will get the book by "+ localDate;
     }
 
     @Override
